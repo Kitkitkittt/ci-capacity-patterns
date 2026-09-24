@@ -8,9 +8,10 @@ scenarios at the default seed.
 
 These are model output, not telemetry: the arrivals are synthetic and the
 service ceilings are illustrative. Both scenarios receive an identical arrival
-process and differ only in service ceiling (14 vs 52 per tick), which is the
-point -- both plateau in throughput, and only the backlog trajectory separates
-them.
+process and differ only in service ceiling (14 vs 52 per tick). The
+fixed-capacity scenario pins at its ceiling while its backlog diverges; the
+higher-capacity one keeps up, completes everything, and ends drained. Compare
+the backlog trajectory to see which is which.
 
 Usage:
     python3 examples/queue_trajectory_svg.py docs/diagrams/queue-trajectory.svg
@@ -194,10 +195,6 @@ def render(model) -> str:
         last_run = panel["run"][-1]
         chunks.append(
             f'<text x="{PAD_L + panel_w - 6:.1f}" y="{y_of(last_run) + 14:.1f}"'
-            ' font-size="10" fill="#16a34a" text-anchor="end">run per tick</text>'
-        )
-        chunks.append(
-            f'<text x="{PAD_L + panel_w - 6:.1f}" y="{y_of(last_run) + 15:.1f}"'
             ' font-size="10" fill="#16a34a" text-anchor="end">run per tick</text>'
         )
 

@@ -245,12 +245,13 @@ Three rules encode the conservative posture:
 ---
 
 Open [`docs/diagrams/ci-capacity.architecture.html`](docs/diagrams/ci-capacity.architecture.html)
-for an interactive diagram of the cited listener/selector architecture — pan,
-zoom, search, and relationship tracing. It is generated from
-[`docs/diagrams/ci-capacity.architecture.json`](docs/diagrams/ci-capacity.architecture.json),
-which records the exact source each component is drawn from and is the source of
-truth. The service depicted is Anthropic's, as described in their article; this
-repository implements no part of it.
+for an interactive diagram of the listener/selector architecture described in
+Anthropic's article ([source](https://claude.com/blog/agentic-coding-is-straining-ci-heres-how-we-scaled-test-impact-analysis-at-anthropic)) —
+pan, zoom, search, and relationship tracing. It is generated from the editable
+specification at
+[`docs/diagrams/ci-capacity.architecture.json`](docs/diagrams/ci-capacity.architecture.json).
+The service depicted is Anthropic's; this repository implements no part of it,
+and the diagram cites no local file as evidence for that architecture.
 
 ---
 
