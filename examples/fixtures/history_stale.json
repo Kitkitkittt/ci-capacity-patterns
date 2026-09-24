@@ -1,0 +1,30 @@
+{
+  "api/middleware": {
+    "age": 2,
+    "status": "pass"
+  },
+  "packages/db/queries": {
+    "age": 3,
+    "status": "pass"
+  },
+  "api/handlers": {
+    "age": 41,
+    "status": "pass"
+  },
+  "packages/db/migrations": {
+    "age": 12,
+    "status": "pass"
+  },
+  "packages/web/components": {
+    "age": 2,
+    "status": "pass"
+  },
+  "packages/web/e2e": {
+    "age": 1,
+    "status": "pass"
+  },
+  "shared/types": {
+    "age": 4,
+    "status": "pass"
+  }
+}
