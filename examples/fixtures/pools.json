@@ -1,0 +1,55 @@
+{
+  "_comment": "Illustrative runner pools. 'admission' is the pool's concurrency limit and 'warm_pool' the pre-provisioned runner count (the latency-for-money trade Machine Runner Orchestrator's minReplicas expresses). 'admission_mode' records who is allowed onto the pool: this is a safety field, and the simulator refuses to construct a self-hosted pool admitted to untrusted fork code.",
+  "pools": [
+    {
+      "id": "hosted-arm",
+      "labels": ["linux", "arm64", "hosted"],
+      "kind": "hosted",
+      "capacity": 64,
+      "admission": 16,
+      "warm_pool": 0,
+      "admission_mode": "hosted-only",
+      "note": "Provider-hosted ARM resources, billed per minute. No fleet to own."
+    },
+    {
+      "id": "self-ephemeral-arm",
+      "labels": ["linux", "arm64", "self-hosted"],
+      "kind": "self-hosted-ephemeral",
+      "capacity": 24,
+      "admission": 8,
+      "warm_pool": 2,
+      "admission_mode": "trusted-only",
+      "note": "Ephemeral self-hosted ARM runners, one job each. Trusted code only."
+    },
+    {
+      "id": "k8s-container",
+      "labels": ["linux", "x86_64", "self-hosted", "container"],
+      "kind": "container",
+      "capacity": 48,
+      "admission": 24,
+      "warm_pool": 4,
+      "admission_mode": "trusted-only",
+      "note": "Ephemeral pods in a cluster; torn down after each job."
+    },
+    {
+      "id": "kubevirt-vm",
+      "labels": ["linux", "x86_64", "self-hosted", "vm"],
+      "kind": "machine-orchestrated",
+      "capacity": 20,
+      "admission": 6,
+      "warm_pool": 3,
+      "admission_mode": "trusted-only",
+      "note": "Full VM per job, pre-warmed pool. Strongest isolation, slowest cold path."
+    },
+    {
+      "id": "persistent-builder",
+      "labels": ["linux", "x86_64", "self-hosted", "persistent"],
+      "kind": "self-hosted-persistent",
+      "capacity": 4,
+      "admission": 2,
+      "warm_pool": 1,
+      "admission_mode": "trusted-only",
+      "note": "Long-lived machine. Retained because it is the shape to argue against."
+    }
+  ]
+}

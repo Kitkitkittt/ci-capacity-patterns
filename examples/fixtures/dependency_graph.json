@@ -1,0 +1,43 @@
+{
+  "freshness_window": 6,
+  "all_suites": [
+    "api/handlers",
+    "api/middleware",
+    "packages/db/migrations",
+    "packages/db/queries",
+    "packages/web/components",
+    "packages/web/e2e",
+    "shared/types",
+    "tools/lint"
+  ],
+  "graph": {
+    "api/": [
+      "api/handlers",
+      "api/middleware"
+    ],
+    "api/handlers.py": [
+      "api/handlers",
+      "shared/types"
+    ],
+    "api/middleware/": [
+      "api/middleware"
+    ],
+    "packages/db/": [
+      "packages/db/queries",
+      "packages/db/migrations"
+    ],
+    "packages/db/schema.sql": [
+      "packages/db/migrations"
+    ],
+    "packages/web/": [
+      "packages/web/components",
+      "packages/web/e2e"
+    ],
+    "shared/": [
+      "shared/types"
+    ],
+    "tools/": [
+      "tools/lint"
+    ]
+  }
+}
