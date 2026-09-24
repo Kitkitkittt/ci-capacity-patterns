@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""Render the measured queue/backlog trajectories as a standalone SVG figure.
+"""Render the simulated queue/backlog trajectories as a standalone SVG figure.
 
 Data comes from ``examples/queue_vs_run.py``: the same seeded model the tests
-assert against. Nothing here is hand-drawn or estimated -- the two panels are
-the per-tick backlog and completed-work series for the ``backlog`` and
-``redesign`` scenarios at the default seed.
+assert against. Nothing here is hand-drawn -- the two panels plot the per-tick
+arrival, completed-work, and backlog series for the ``backlog`` and ``redesign``
+scenarios at the default seed.
 
-Both scenarios receive an identical arrival process. They differ only in
-service ceiling (14 vs 52 per tick), which is the whole point: throughput plateaus
-in both, while only the backlog trajectory separates them.
+These are model output, not telemetry: the arrivals are synthetic and the
+service ceilings are illustrative. Both scenarios receive an identical arrival
+process and differ only in service ceiling (14 vs 52 per tick), which is the
+point -- both plateau in throughput, and only the backlog trajectory separates
+them.
 
 Usage:
     python3 examples/queue_trajectory_svg.py docs/diagrams/queue-trajectory.svg
@@ -22,9 +24,8 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-
+HEIGHT = 540
 WIDTH = 1000
-HEIGHT = 470
 PAD_L = 62
 PAD_R = 20
 PAD_T = 34
@@ -89,6 +90,11 @@ def render(model) -> str:
     panel_h = (HEIGHT - PAD_T - PAD_B - 24) / 2
     panel_w = WIDTH - PAD_L - PAD_R
 
+    # The plot floor sits above the panel's lower edge, leaving a gutter for the
+    # summary line; without it the zero-valued series and their labels collide
+    # with the border and each other.
+    gutter = 26
+
     chunks = [
         (
             f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDTH} {HEIGHT}"'
@@ -112,9 +118,10 @@ def render(model) -> str:
     for index, panel in enumerate(panels):
         top = PAD_T + 24 + index * (panel_h + 24)
         bottom = top + panel_h
+        floor = bottom - gutter
 
-        def y_of(value: float, _top=top, _bottom=bottom) -> float:
-            return _bottom - (value / y_max) * (_bottom - _top)
+        def y_of(value: float, _top=top, _floor=floor) -> float:
+            return _floor - (value / y_max) * (_floor - _top)
 
         chunks.append(
             f'<rect x="{PAD_L}" y="{top:.1f}" width="{panel_w}" height="{panel_h:.1f}"'
@@ -162,8 +169,8 @@ def render(model) -> str:
             ' stroke-dasharray="5 4"/>'
         )
         chunks.append(
-            f'<text x="{PAD_L + panel_w - 4}" y="{cap_y - 5:.1f}" font-size="10"'
-            f' fill="{MUTED}" text-anchor="end">capacity {panel["capacity"]}/tick</text>'
+            f'<text x="{PAD_L + 6}" y="{cap_y - 5:.1f}" font-size="10"'
+            f' fill="{MUTED}">capacity {panel["capacity"]}/tick</text>'
         )
 
         arrival_path = panel_paths(panel["arrival"], PAD_L, PAD_L + panel_w, y_of)
@@ -172,32 +179,44 @@ def render(model) -> str:
             ' stroke-dasharray="2 3" opacity="0.85"/>'
         )
 
+        run_path = panel_paths(panel["run"], PAD_L, PAD_L + panel_w, y_of)
+        chunks.append(
+            f'<path d="{run_path}" fill="none" stroke="#16a34a" stroke-width="1.8"'
+            ' stroke-linejoin="round"/>'
+        )
+
         backlog_path = panel_paths(panel["backlog"], PAD_L, PAD_L + panel_w, y_of)
         chunks.append(
             f'<path d="{backlog_path}" fill="none" stroke="{panel["colour"]}"'
             ' stroke-width="2.1" stroke-linejoin="round"/>'
         )
 
-        last_y = y_of(panel["backlog"][-1])
+        last_run = panel["run"][-1]
         chunks.append(
-            f'<circle cx="{PAD_L + panel_w:.1f}" cy="{last_y:.1f}" r="3.4"'
-            f' fill="{panel["colour"]}"/>'
+            f'<text x="{PAD_L + panel_w - 6:.1f}" y="{y_of(last_run) + 14:.1f}"'
+            ' font-size="10" fill="#16a34a" text-anchor="end">run per tick</text>'
         )
         chunks.append(
-            f'<text x="{PAD_L + panel_w - 6:.1f}" y="{last_y - 8:.1f}" font-size="10.5"'
-            f' font-weight="600" fill="{panel["colour"]}" text-anchor="end">'
+            f'<text x="{PAD_L + panel_w - 6:.1f}" y="{y_of(last_run) + 15:.1f}"'
+            ' font-size="10" fill="#16a34a" text-anchor="end">run per tick</text>'
+        )
+
+        last_y = y_of(panel["backlog"][-1])
+        chunks.append(
+            f'<text x="{PAD_L + 12}" y="{max(last_y - 11, top + 48):.1f}"'
+            f' font-size="10.5" font-weight="600" fill="{panel["colour"]}">'
             f"backlog {int(panel['backlog_final'])}</text>"
         )
         chunks.append(
-            f'<text x="{PAD_L + 12}" y="{bottom - 5:.1f}" font-size="10" fill="{INK}">'
+            f'<text x="{PAD_L + 12}" y="{bottom - 8:.1f}" font-size="10" fill="{INK}">'
             f"completed {int(panel['run_total'])} of {int(panel['queued_total'])} "
             "queued</text>"
         )
 
     chunks.append(
-        f'<text x="{PAD_L}" y="{HEIGHT - 12}" font-size="10" fill="{MUTED}">'
-        "Thresholds and multipliers are illustrative of the cited architecture, not "
-        "measurements of any real service.</text>"
+        f'<text x="{PAD_L}" y="{HEIGHT - 8}" font-size="10" fill="{MUTED}">'
+        "Model output, not telemetry: arrivals are synthetic and the service "
+        "ceilings are illustrative.</text>"
     )
     chunks.append("</svg>")
     return "\n".join(chunks) + "\n"

@@ -2,219 +2,32 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Test Impact Analysis: Singleton to Horizontally Scaled",
+    "title": "Test Impact Analysis: Redesigning the Listener",
     "quality_profile": "showcase",
-    "legend": {
-      "mode": "auto"
-    },
-    "viewBox": [
-      1194,
-      580
-    ],
-    "repository": {
-      "url": "https://github.com/Kitkitkittt/ci-capacity-patterns",
-      "revision": "33cf5c7453c75afe386c7e5836f03fdc161ab5cb"
-    }
+    "legend": { "mode": "auto" },
+    "viewBox": [1194, 620]
   },
   "components": [
-    {
-      "id": "pr_queue",
-      "type": "external",
-      "label": "PR Queue",
-      "sublabel": "agent-authored changes",
-      "pos": [
-        40,
-        280
-      ],
-      "size": [
-        140,
-        62
-      ]
-    },
-    {
-      "id": "selector",
-      "type": "frontend",
-      "label": "Selector",
-      "sublabel": "reads per-test history",
-      "pos": [
-        250,
-        120
-      ],
-      "size": [
-        148,
-        62
-      ],
-      "sources": [
-        {
-          "path": "examples/cisim/selector.py",
-          "line": 169,
-          "label": "Selector"
-        }
-      ]
-    },
-    {
-      "id": "listener",
-      "type": "backend",
-      "label": "Listener",
-      "sublabel": "records CI results",
-      "pos": [
-        230,
-        440
-      ],
-      "size": [
-        148,
-        62
-      ],
-      "sources": [
-        {
-          "path": "tests/test_reporting.py",
-          "line": 389,
-          "label": "queue model tests"
-        }
-      ]
-    },
-    {
-      "id": "history",
-      "type": "database",
-      "label": "Test History",
-      "sublabel": "single-writer state",
-      "pos": [
-        500,
-        280
-      ],
-      "size": [
-        148,
-        62
-      ],
-      "tag": "v0 singleton",
-      "sources": [
-        {
-          "path": "examples/fixtures/history_fresh.json",
-          "line": 1,
-          "label": "per-test history"
-        }
-      ]
-    },
-    {
-      "id": "job_stream",
-      "type": "messagebus",
-      "label": "CI Job Results",
-      "sublabel": "arrivals every second",
-      "pos": [
-        760,
-        440
-      ],
-      "size": [
-        150,
-        62
-      ]
-    },
-    {
-      "id": "runners",
-      "type": "cloud",
-      "label": "CI Runners",
-      "sublabel": "hosted + self-hosted",
-      "pos": [
-        990,
-        440
-      ],
-      "size": [
-        148,
-        62
-      ],
-      "sources": [
-        {
-          "path": "examples/cisim/lifetime.py",
-          "line": 236,
-          "label": "admission_for"
-        }
-      ]
-    }
+    { "id": "pr_queue", "type": "external", "label": "Opened PRs", "sublabel": "agent-authored changes", "pos": [40, 250], "size": [140, 62] },
+    { "id": "selector", "type": "frontend", "label": "Selector", "sublabel": "picks tests per PR", "pos": [250, 110], "size": [152, 62] },
+    { "id": "history", "type": "database", "label": "Per-test History", "sublabel": "read by the selector", "pos": [560, 110], "size": [172, 62] },
+    { "id": "consumer", "type": "backend", "label": "Roll-up Consumer", "sublabel": "rolls up every few seconds", "pos": [560, 300], "size": [172, 62] },
+    { "id": "journal", "type": "messagebus", "label": "Journal", "sublabel": "in-memory store", "pos": [560, 470], "size": [172, 62], "tag": "redesign" },
+    { "id": "listener", "type": "backend", "label": "Listener", "sublabel": "records every CI result", "pos": [250, 470], "size": [160, 62] }
   ],
   "boundaries": [
-    {
-      "kind": "region",
-      "label": "Test impact analysis service",
-      "wraps": [
-        "selector",
-        "history",
-        "listener"
-      ],
-      "pad": 24
-    },
-    {
-      "kind": "security-group",
-      "label": "untrusted fork admission",
-      "wraps": [
-        "runners"
-      ],
-      "pad": 16
-    }
+    { "kind": "region", "label": "Test impact analysis service", "wraps": ["selector", "history", "consumer", "journal", "listener"], "pad": 24 }
   ],
   "connections": [
-    {
-      "from": "pr_queue",
-      "to": "selector",
-      "label": "changed files",
-      "variant": "emphasis"
-    },
-    {
-      "from": "selector",
-      "to": "history",
-      "label": "lookup history"
-    },
-    {
-      "from": "history",
-      "to": "listener",
-      "label": "single writer",
-      "variant": "security"
-    },
-    {
-      "from": "listener",
-      "to": "job_stream",
-      "label": "results",
-      "variant": "emphasis"
-    },
-    {
-      "from": "job_stream",
-      "to": "runners",
-      "label": "schedule job"
-    },
-    {
-      "from": "runners",
-      "to": "listener",
-      "label": "pass / fail",
-      "variant": "dashed",
-      "fromSide": "bottom",
-      "toSide": "bottom"
-    }
+    { "from": "pr_queue", "to": "selector", "label": "changed files", "variant": "emphasis" },
+    { "from": "history", "to": "selector", "label": "read history", "variant": "dashed" },
+    { "from": "consumer", "to": "history", "label": "per-test rows", "variant": "emphasis" },
+    { "from": "journal", "to": "consumer", "label": "roll up", "variant": "dashed" },
+    { "from": "listener", "to": "journal", "label": "append each result", "variant": "emphasis" }
   ],
   "cards": [
-    {
-      "dot": "amber",
-      "title": "Where It Broke",
-      "items": [
-        "Single-writer history blocked horizontal sharding",
-        "20 min of listener lag left tens of thousands of results unapplied"
-      ]
-    },
-    {
-      "dot": "rose",
-      "title": "Three Patches",
-      "items": [
-        "Bigger machine: 70 days",
-        "Per-package sharding: 29 days",
-        "Daily restarts: under a day"
-      ]
-    },
-    {
-      "dot": "cyan",
-      "title": "The Redesign",
-      "items": [
-        "Stateless workers append to a journal",
-        "A consumer rolls it up per test",
-        "State leaves the process, so capacity scales"
-      ]
-    }
+    { "dot": "amber", "title": "What Broke", "items": ["One writer kept the running history, so it could not shard", "The listener fell behind the PR queue", "20 min of lag left tens of thousands of results unapplied", "Stale history meant running flaky or already-failing tests"] },
+    { "dot": "rose", "title": "Three Patches", "items": ["Bigger machine: 70 days", "Per-package shards: 29 days", "Daily restarts: under a day", "Restarts also dropped results, widening the lag"] },
+    { "dot": "cyan", "title": "The Redesign", "items": ["Any listener worker processes any result", "Workers append to a journal and keep nothing in memory", "A separate consumer rolls the journal up per test", "The selector reads history quickly; state left the process"] }
   ]
 }

@@ -398,7 +398,7 @@ docs/
   diagrams/
     ci-capacity.architecture.json   interactive architecture diagram (Archify spec)
     ci-capacity.architecture.html   rendered interactive diagram; open in a browser
-    queue-trajectory.svg            measured backlog trajectories, both scenarios
+    queue-trajectory.svg            simulated backlog trajectories, both scenarios
 ```
 
 `tests/run_all.py` is the only test entry point and it uses `unittest` discovery,
