@@ -1,19 +1,76 @@
 # Capacity and cost patterns for CI at agentic-coding scale
 
-Reference patterns, plus small **offline simulations**, for keeping CI throughput and
-cost predictable when the number of pull requests and tests grows faster than the
-number of engineers.
+Three pictures connect a measured rise in project activity, an observed CI
+bottleneck, and a **proposed** compute-routing design. They do not show a measured
+speedup. This repository also provides small, deterministic offline simulations
+of queues, runner lifetimes, and test selection.
 
-Everything in this repository runs locally with nothing but a Python 3 standard
-library interpreter. No cloud calls, no credentials, no network, no real runner
-registration. The simulations are *models*: they exist to make queueing, selection,
-and runner-lifetime behaviour reproducible and inspectable, not to measure a real
-installation.
+The simulations and figure rendering need only Python 3's standard library.
+The optional activity-data collector reads GitHub with an authorized `gh`
+session; it is not needed to run the examples. No runner is registered or
+provider is deployed here.
 
 ```console
 $ python3 examples/selector_demo.py --help
 $ python3 tests/run_all.py
 ```
+
+## The story in three pictures
+
+### 1. Activity grew; a run is not a unit of capacity
+
+![Weekly Actions runs and opened PRs in two access-controlled engineering projects, grouped under public-safe categories](docs/diagrams/activity-weekly.svg)
+
+**In plain terms:** these bars count change requests and automated check
+events. They do not show how long anyone waited or whether capacity kept up.
+
+**[OBSERVED]** Across UTC weeks beginning Aug 3–Sep 21, 2026, the fabric
+implementation category recorded **329 Actions workflow runs / 46 opened PRs**;
+the data platform category recorded **1,659 runs / 177 opened PRs**. The final
+week is only Sep 21–24 (through 08:43 UTC). Runs include **504 skipped** across
+both categories; these are events, not executed jobs, queue times, or a measure
+of engineering output. The [frozen weekly counts and collection method](docs/SOURCES.md#31-bounded-engineering-activity-snapshot)
+are public-safe aggregates. CircleCI is not part of this series.
+
+### 2. The current bottleneck: a controller waits while a sandbox works
+
+![Current GitHub controller-to-ephemeral-sandbox handoff and older observed controller occupancy and sibling wait](docs/diagrams/controller-occupancy.svg)
+
+**In plain terms:** the small machine assigning work stays busy just waiting
+for the temporary machine doing the work; the next job may have nowhere to
+start, even though the first machine is not running the tests itself.
+
+**[OBSERVED]** A thin self-hosted ARM64 controller waits synchronously for a
+disposable Novita sandbox. With two controllers, three jobs can choose either;
+four are pinned to one. On an **older controller**, one job occupied its runner
+for about **1,209 s**, while a short sibling waited about **1,516 s**. These are
+historical durations, **not** a before/after measurement. More sandbox capacity
+does not free the waiting controller; the separate listener/selector bottleneck
+described in §2 is a different failure mode.
+
+### 3. Route work only after admission; keep CI's current path distinct
+
+[![Conceptual Cloudflare queue dispatch through an admission gate to an admitted Node Slot or a separately admitted Modal adapter, alongside today's separate GitHub Actions to Novita path](docs/diagrams/fabric-capacity-preview.png)](docs/diagrams/fabric-capacity.architecture.html)
+
+**In plain terms:** the top path is a proposed traffic director that could
+send work to an approved fabric machine or, later, a separately approved
+outside service. The bottom path is today's CI; this picture does **not**
+replace it.
+
+**[PROPOSED]** Cloudflare Worker + Queue would own bounded job dispatch, state,
+and callback. An admitted Node Slot is the first pilot's execution target;
+Modal is only a candidate for a later public/synthetic burst CPU/GPU pilot,
+**after separate provider admission**. Today's GitHub Actions → controller →
+Novita sandbox CI path remains separate. No deployment, data migration, or
+queue reduction is claimed. [Explore the interactive architecture](docs/diagrams/fabric-capacity.architecture.html)
+(light/dark, search, pan, zoom), its [editable specification](docs/diagrams/fabric-capacity.architecture.json),
+the [public fabric model](https://github.com/Kitkitkittt/heterogeneous-compute-fabric),
+and the [dated Cloudflare/Modal research summary](docs/SOURCES.md#32-candidate-control-plane-and-external-compute-boundary)
+with the [public proposal issue](https://github.com/Kitkitkittt/heterogeneous-compute-fabric/issues/41).
+
+The three evidence levels matter: **observed** activity and controller behavior,
+**simulated** queue trajectories below, and **proposed** provider routing above.
+Nothing in the chart demonstrates that the proposal solves the bottleneck.
 
 ---
 
@@ -26,90 +83,39 @@ evidence levels:
 | Status | Meaning | Where it lives |
 | --- | --- | --- |
 | **Runnable here** | Deterministic simulations and tests requiring only Python 3. | `examples/`, `tests/` |
-| **Observed separately** | A private project's opt-in CircleCI `arm.medium` conformance subset passed (125 tests); no self-hosted CircleCI runner was installed. This did not replace mandatory checks or measure queue reduction. | [Sourced findings](docs/SOURCES.md#3-what-we-verified-ourselves-and-what-we-did-not) |
+| **Observed separately** | The aggregate activity series above, historical controller occupancy, and one opt-in CircleCI `arm.medium` conformance subset (125 passing tests). No self-hosted CircleCI runner or queue improvement was observed. | [Sourced findings](docs/SOURCES.md#3-what-we-verified-ourselves-and-what-we-did-not) |
 | **Source-reported** | Anthropic's selector architecture and `related-sciences/gce-github-runner` are their implementations, not code deployed here. | [Sourced findings](docs/SOURCES.md) |
-| **Proposed / design only** | Migrating further CI gates, admission of new execution pools, and measuring a real queue reduction require separate review and evidence. | README §4–§5 |
+| **Proposed / design only** | Cloudflare/Modal job routing, further CI-gate migration, admission of new execution pools, and real queue-reduction measurement need separate review and evidence. | [Candidate boundary](docs/SOURCES.md#32-candidate-control-plane-and-external-compute-boundary), README §4–§5 |
 
-No registered self-hosted runner, cloud worker, or production controller is
-included in this public repository. Its capacity numbers are model output.
+No registered runner, cloud worker, or production controller is included in this
+public repository. The §3 queue and runner capacity numbers are model output;
+the separately observed activity and historical timings are not.
 
 ---
 
 ## 1a. Our CI decisions, as a case study
 
-The patterns above are general. This is what one private project actually runs,
-stated narrowly and only where we can stand behind the claim. Aggregate facts
-only — no identifiers, hostnames, credentials, or private repository names.
+This is an access-controlled project's CI design, not infrastructure in this
+public repository. Only aggregate facts are published here.
 
-### The shape we run
+- **Current execution:** Two GitHub self-hosted ARM64 controllers dispatch
+  disposable Novita sandboxes and **wait synchronously** for completion. Three
+  shared-label conformance jobs can use either controller; four jobs are pinned
+  to one. Three pins encode acceptance/intake policy; the fourth, migration
+  apply, requires Docker/buildx and PostgreSQL on its runner and cannot simply
+  run inside the sandbox without Docker.
+- **Evidence boundary:** The older 1,209 s occupancy / 1,516 s sibling wait is
+  historical, not a before/after improvement. A separate hosted CircleCI
+  `arm.medium` pilot passed 125 tests on an opt-in subset; it did not replace
+  mandatory checks or install a self-hosted CircleCI runner.
+- **Trust boundary:** The controller action receives provider and GitHub tokens
+  through its environment. What propagates to the sandbox is unverified; no
+  isolation or credential-safety claim is made here. Fabric Node Slot admission
+  labels are **not** GitHub or CircleCI runner registration or authorization.
 
-The private repository uses **two GitHub self-hosted ARM64 controllers**. A
-**thin controller action** performs no build work: it provisions a **disposable
-sandbox** (a rented cloud instance), runs the job there, and tears it down
-afterwards. The controller action is passed provider and GitHub tokens through
-its environment for that purpose.
-
-**Three shared-label conformance jobs** can run on either controller — the shared
-label is the routing contract from §4.1, and reuse is deliberate.
-
-Independently, **four jobs are pinned to one controller**: three by acceptance/
-intake policy, and **migration apply**, which needs Docker/buildx and PostgreSQL
-on the runner itself. That is the specific reason migration apply cannot simply
-be moved into the sandbox — it cannot run there without Docker.
-
-The controller also **waits synchronously on the sandbox** for the duration of
-the job (see below).
-
-Separately, a **hosted CircleCI `arm.medium`** path exists as a **test pilot**,
-not a production replacement — it does not "cover" the production ARM64
-workload. It is opt-in behind a parameter that can be enabled on any branch. The
-run that used it passed **125 tests**, proving that subset on hosted ARM64 and
-nothing more.
-
-### The bottleneck we have not solved
-
-The controller **occupies its runner synchronously for the full duration of the
-sandbox job**. While the sandbox runs, the runner orchestrating it is
-unavailable for anything else. With two controllers, this is the constraint that
-bounds throughput, and it is not fixed.
-
-Note that this is a *different* problem from the one in §2. Anthropic's was a
-single-writer service whose in-process state blocked horizontal sharding, solved
-by moving state out of the process. This one is synchronous occupancy in the
-controller-to-sandbox handoff. We are not claiming equivalence, and we are not
-claiming it is resolved.
-
-### What we measured
-
-One historical observation from an **older controller**, which occupied its
-runner for about **1209 s** for a job while a short sibling waited about
-**1516 s** behind it. Both are aggregate durations from that earlier design.
-
-**We do not claim this was resolved, and we have not measured a queue
-improvement.** No before/after comparison exists. Anyone reading a number in
-this repository should treat it as model output or as a labelled historical
-observation — never as evidence that a change made anything faster.
-
-### Verified, unverified, and deliberately unclaimed
-
-**Verified:** the private project's CI runs on two GitHub self-hosted ARM64
-controllers; the shared-label and pinned-job routing described above; the
-125-test run passed on hosted CircleCI `arm.medium`, proving that subset only;
-the historical durations above.
-
-**Not verified:** no self-hosted CircleCI runner was installed, so nothing about
-self-hosted runner admission or registration is claimed. We also make no
-security claims about what the sandbox can reach or hold: the controller action
-receives provider and GitHub tokens through its environment, and we have not
-established what propagates further. That distinction is left open rather than
-asserted.
-
-One distinction worth keeping sharp: a *shared label* in a **public compute
-fabric** describes which Node Slot a workload may run on. The fabric's
-verified/not-admitted state is a statement about *fabric scheduling*. It is not
-a CI runner registration, and it grants nothing on GitHub or CircleCI. Keeping
-those two senses of "label" separate is what stops a capacity discussion from
-quietly becoming an authorization one.
+The observed bottleneck is controller occupancy, **not** Anthropic's
+single-writer listener lag in §2. Neither is claimed resolved. See the
+[provenance and explicit non-claims](docs/SOURCES.md#3-what-we-verified-ourselves-and-what-we-did-not).
 
 ---
 
@@ -384,6 +390,7 @@ examples/
   label_lifetime.py      ephemeral runner lifecycle + label routing
   selector_demo.py       test impact selection + fail-closed staleness guard
   queue_trajectory_svg.py  renders docs/diagrams/queue-trajectory.svg from the model
+  activity_figure.py      regenerates the observed weekly activity SVG from a frozen aggregate; optional authenticated collection
   cisim/                 shared library: seeded RNG, statistics, error vocabulary
     queue.py               arrival/service/backlog model
     lifetime.py            runner lifecycle, label routing, pool reconciliation
@@ -397,6 +404,13 @@ tests/
 docs/
   SOURCES.md             sourced findings note, with provenance per claim
   diagrams/
+    activity-snapshot.json           bounded, anonymized weekly GitHub aggregates
+    activity-weekly.svg              observed activity, including skipped runs
+    controller-occupancy.svg         observed CI handoff and older wait durations
+    fabric-capacity.architecture.json  proposed/current routing specification
+    fabric-capacity.architecture.html  standalone interactive architecture
+    fabric-capacity-preview.png        canonical PNG preview of that architecture
+    fabric-capacity.delivery.json      hash and visual-containment receipt
     ci-capacity.architecture.json   interactive architecture diagram (Archify spec)
     ci-capacity.architecture.html   rendered interactive diagram; open in a browser
     queue-trajectory.svg            simulated backlog trajectories, both scenarios

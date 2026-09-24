@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 420" role="img" aria-labelledby="title desc" font-family="ui-sans-serif,system-ui,sans-serif">
+<title id="title">Why a fast sandbox does not free a waiting controller</title>
+<desc id="desc">A GitHub job holds one of two self-hosted ARM64 controllers while a disposable sandbox does its work. Three shared-label jobs may select either controller; four pinned jobs require one. Historical observation from an older controller: a job occupied its runner about 1209 seconds; a short sibling waited about 1516 seconds. These are not a before and after comparison.</desc>
+<rect width="1040" height="420" fill="#fff"/>
+<text x="46" y="38" font-size="21" font-weight="700" fill="#0f172a">The controller waits while the sandbox works</text>
+<text x="46" y="61" font-size="12" fill="#475569">OBSERVED architecture · a thin controller still holds its runner until its sandbox finishes</text>
+<rect x="46" y="95" width="180" height="76" rx="9" fill="#e0f2fe" stroke="#0891b2"/>
+<text x="66" y="126" font-size="16" font-weight="700" fill="#0f172a">GitHub Actions</text>
+<text x="66" y="150" font-size="12" fill="#334155">sends a CI job</text>
+<path d="M226 133H270" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="274" y="95" width="212" height="76" rx="9" fill="#fef3c7" stroke="#d97706"/>
+<text x="295" y="126" font-size="16" font-weight="700" fill="#0f172a">ARM64 controller</text>
+<text x="295" y="150" font-size="12" fill="#334155">orchestrates + waits</text>
+<path d="M486 133H529" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="533" y="95" width="212" height="76" rx="9" fill="#dcfce7" stroke="#16a34a"/>
+<text x="554" y="126" font-size="16" font-weight="700" fill="#0f172a">Novita sandbox</text>
+<text x="554" y="150" font-size="12" fill="#334155">runs disposable CI compute</text>
+<rect x="777" y="95" width="215" height="76" rx="9" fill="#f1f5f9" stroke="#94a3b8"/>
+<text x="795" y="123" font-size="14" font-weight="700" fill="#0f172a">Routing is constrained</text>
+<text x="795" y="144" font-size="11" fill="#334155">3 shared-label jobs: either of 2</text>
+<text x="795" y="159" font-size="11" fill="#334155">4 pinned jobs: one controller</text>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#64748b"/></marker></defs>
+<text x="46" y="217" font-size="15" font-weight="700" fill="#0f172a">One historical pair (older controller)</text>
+<text x="46" y="247" font-size="12" fill="#334155">Runner occupied</text>
+<rect x="190" y="230" width="453" height="24" rx="4" fill="#d97706"/>
+<text x="656" y="248" font-size="13" font-weight="700" fill="#92400e">≈1,209 s</text>
+<text x="46" y="289" font-size="12" fill="#334155">Short sibling waited</text>
+<rect x="190" y="272" width="568" height="24" rx="4" fill="#e11d48"/>
+<text x="771" y="290" font-size="13" font-weight="700" fill="#9f1239">≈1,516 s</text>
+<line x1="190" y1="311" x2="790" y2="311" stroke="#94a3b8"/>
+<text x="190" y="331" font-size="11" fill="#475569">0</text>
+<text x="561" y="331" font-size="11" fill="#475569">1,000 s</text>
+<text x="752" y="331" font-size="11" fill="#475569">1,600 s</text>
+<rect x="46" y="350" width="946" height="47" rx="7" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="61" y="370" font-size="12" fill="#334155">Bottleneck: the orchestration slot is not free until the remote task ends; a new pool alone does not fix that wait.</text>
+<text x="61" y="387" font-size="11" fill="#475569">The two durations are historical observations, not a speedup, current queue measurement, or general CI benchmark.</text>
+</svg>

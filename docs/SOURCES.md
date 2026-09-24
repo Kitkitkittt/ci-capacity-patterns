@@ -313,6 +313,60 @@ their capacity numbers are model output, not field telemetry. A provider-hosted
 pilot is an observed option, not a deployed replacement for the existing CI
 control plane.
 
+### 3.1 Bounded engineering-activity snapshot
+
+**[OBSERVED, through 2026-09-24T08:43:24Z]** An authorized read of two
+access-controlled engineering projects counted GitHub Actions **workflow runs**
+by `created_at` and pull requests **opened** by creation date for UTC weeks
+starting 2026-08-03 through the partial week ending 2026-09-24. The generic
+categories are *fabric implementation* and *data platform*. The totals in this
+window are 329 and 1,659 workflow runs respectively, and 46 and 177 opened
+PRs. These are two distinct project populations, not a combined throughput
+benchmark. The [aggregate snapshot](diagrams/activity-snapshot.json) records
+the eight weekly pairs and conclusion counts; the [figure](diagrams/activity-weekly.svg)
+plots those same counts. Run totals include success, failure, cancellation, and
+**504 skipped runs** across both projects. A workflow run is not a job, minute,
+queued task, or measure of engineering headcount. PR creation is not a merge.
+The last week covers only Sep 21–24 to the capture instant; earlier weeks are
+seven-day UTC windows. CircleCI is **not** counted in this series.
+
+**[OURS]** Reproduce the SVG offline with `python3 examples/activity_figure.py`;
+an authorized operator may refresh the frozen source once with
+`python3 examples/activity_figure.py --collect OWNER/FABRIC_REPO
+OWNER/DATA_REPO --cutoff 2026-09-24T08:43:24Z` (substitute access-controlled
+repository paths locally; do not publish them). Collection reads GitHub REST
+`repos/{owner}/{repo}/actions/runs?per_page=100&page=N` through the lower
+date bound and `search/issues?q=repo:{owner}/{repo} type:pr created:START..END`
+for each week. It stores only aggregate categories, UTC dates, counts, and
+conclusions. Source availability and historical retention can change, so
+recollection at a later date is not guaranteed to yield the same results;
+the checked-in aggregate is the frozen evidence. Neither this count nor the
+historical controller durations in the README establish a queue improvement.
+
+### 3.2 Candidate control-plane and external-compute boundary
+
+**[OURS, proposed; not deployed by this repository]** A Cloudflare Worker and
+Queue could own bounded job identity and state, and dispatch only after a Role,
+data-class, and cost gate to an admitted Node Slot. A separate, **unadmitted**
+Modal provider adapter is a candidate for one public/synthetic burst CPU/GPU
+pilot; it would not inherit Node Slot admission. Completion must return by an
+authenticated, idempotent callback. A current CI path uses a thin controller
+and an ephemeral Novita sandbox, but its synchronous controller occupancy is
+not repaired merely by drawing the candidate path. This public-safe summary
+was derived from the access-controlled research note at commit
+`a4ad9e87621c51fa0dd4723c00bdb93d20a56cc0` (2026-09-24); the private
+repository location is deliberately not published. Neither the note nor this
+diagram authorizes purchase, deployment, data migration, or provider admission.
+Public fabric concepts and the proposed Cloudflare scope are in the [fabric architecture](https://github.com/Kitkitkittt/heterogeneous-compute-fabric/blob/main/docs/architecture.md)
+and [design issue](https://github.com/Kitkitkittt/heterogeneous-compute-fabric/issues/41).
+
+**[SOURCE, checked 2026-09-24]** Product and pricing boundaries for this
+candidate: [Cloudflare Workers](https://developers.cloudflare.com/workers/platform/pricing/),
+[Queues](https://developers.cloudflare.com/queues/platform/pricing/), and
+[Modal pricing](https://modal.com/pricing). Verify prices and limits again before
+implementation. None of those provider references proves that the candidate
+route is installed, cheaper, faster, or authorized for non-public data.
+
 ---
 
 ## 4. Architecture references

@@ -1,0 +1,21 @@
+{
+  "source_window_utc": ["2026-08-03", "2026-09-24T08:43:24Z"],
+  "artifacts": {
+    "activity-snapshot.json": "b99c9fff9dd8e2de4c3ab69153a9505de1455fab1b69d72e39e234ad25193e1c",
+    "activity-weekly.svg": "36e2280d239086528b4372f23603ea2b8c5ac84e9fc09fb8d07f88fd33ff7ad2",
+    "controller-occupancy.svg": "dd9bb82c80c856319ad1d92c8d397908499f3ef68ec857d41daf6986e6947362",
+    "fabric-capacity.architecture.json": "f4dbe1a442ffa32bb45ee9b0fbace326676c4b0921330675257166c04d4a565f",
+    "fabric-capacity.architecture.html": "e457a424e20942f979b155252f4b31bb1bfc5ffce4d86e6a4f14055ad293b874",
+    "fabric-capacity-preview.png": "00037af24494db27ea254d4699e1297d08cf61ba73511c72dab0e368db07bdaf"
+  },
+  "validation": {
+    "showcase_checks_passed": "9/9",
+    "composition_errors": 0,
+    "composition_warnings": 0,
+    "visual_containment": "pass",
+    "viewports": ["1440x900", "1600x1000", "1920x1080", "2048x1320"],
+    "themes_inspected": ["light", "dark"],
+    "visual_review": "passed"
+  },
+  "scope": "Public-safe aggregate observations, offline models and candidate routing; no deployed Cloudflare or Modal path and no measured queue improvement."
+}
