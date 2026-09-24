@@ -244,11 +244,15 @@ Three rules encode the conservative posture:
 
 ---
 
-![Test impact analysis architecture: singleton to horizontally scaled](docs/diagrams/ci-capacity.architecture.html)
+Open [`docs/diagrams/ci-capacity.architecture.html`](docs/diagrams/ci-capacity.architecture.html)
+for an interactive diagram of the cited listener/selector architecture — pan,
+zoom, search, and relationship tracing. It is generated from
+[`docs/diagrams/ci-capacity.architecture.json`](docs/diagrams/ci-capacity.architecture.json),
+which records the exact source each component is drawn from and is the source of
+truth. The service depicted is Anthropic's, as described in their article; this
+repository implements no part of it.
 
-`docs/diagrams/ci-capacity.architecture.html` diagrams the cited Anthropic
-listener/selector architecture. Open it to pan, zoom, and trace relationships;
-the specification beside it is the source of truth.
+---
 
 ## 4. Runner capacity: hosted, self-hosted, ephemeral
 
@@ -393,7 +397,7 @@ docs/
   SOURCES.md             sourced findings note, with provenance per claim
   diagrams/
     ci-capacity.architecture.json   interactive architecture diagram (Archify spec)
-    ci-capacity.architecture.html   rendered diagram; open in a browser
+    ci-capacity.architecture.html   rendered interactive diagram; open in a browser
     queue-trajectory.svg            measured backlog trajectories, both scenarios
 ```
 
