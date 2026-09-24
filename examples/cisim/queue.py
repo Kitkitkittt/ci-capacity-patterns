@@ -37,7 +37,7 @@ redesign buys a horizontal axis, not free compute.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Sequence
+from typing import Any
 
 from . import InfraError, Rng, Series
 

@@ -102,9 +102,7 @@ def render_one(result: QueueResult) -> str:
         lines.append("  verdict: FAILED (model produced an impossible result)")
     else:
         lines.append("")
-        lines.append(
-            "  verdict: OK (run never exceeded accepted work)"
-        )
+        lines.append("  verdict: OK (run never exceeded accepted work)")
     return "\n".join(lines)
 
 
@@ -128,34 +126,26 @@ def render_comparison(results: list[QueueResult]) -> str:
         )
     lines.append("")
     lines.append("Reading it:")
-    lines.append(
-        "  'baseline' shows a healthy service: a flat arrival rate, a backlog"
-    )
+    lines.append("  'baseline' shows a healthy service: a flat arrival rate, a backlog")
     lines.append(
         "  that never accumulates, and work completed in step with work accepted."
     )
     lines.append(
         "  'backlog' and 'starved' both diverge, with 'starved' losing the race"
     )
-    lines.append(
-        "  outright because its service rate sits below the arrival rate."
-    )
+    lines.append("  outright because its service rate sits below the arrival rate.")
     lines.append(
         "  'redesign' handles the same arrival growth as 'backlog' and ends the"
     )
     lines.append(
         "  run with an empty queue, because surplus capacity is applied to the"
     )
-    lines.append(
-        "  existing backlog instead of being discarded each tick."
-    )
+    lines.append("  existing backlog instead of being discarded each tick.")
     lines.append("")
     lines.append(
         "  Total work completed is a poor discriminator between these rows. The"
     )
-    lines.append(
-        "  backlog trajectory is what tells a patch apart from a fix."
-    )
+    lines.append("  backlog trajectory is what tells a patch apart from a fix.")
     return "\n".join(lines)
 
 
@@ -204,7 +194,11 @@ def main(argv: list[str] | None = None) -> int:
         }
         print(json.dumps(payload, indent=2, sort_keys=True))
     elif args.compare:
-        print(render_report("QUEUE VS RUN -- COMPARISON", render_comparison(results).splitlines()))
+        print(
+            render_report(
+                "QUEUE VS RUN -- COMPARISON", render_comparison(results).splitlines()
+            )
+        )
     else:
         print(render_report("QUEUE VS RUN", render_one(results[0]).splitlines()))
 

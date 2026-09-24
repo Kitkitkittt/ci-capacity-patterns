@@ -114,7 +114,6 @@ class TestInfraHelpers(unittest.TestCase):
         self.assertGreater(mean, 10.0)
         self.assertLess(mean, 14.0)
 
-
     def test_rng_is_deterministic_across_instances(self) -> None:
         first = [Rng(11).random() for _ in range(1)]
         second = [Rng(11).random() for _ in range(1)]
@@ -123,7 +122,9 @@ class TestInfraHelpers(unittest.TestCase):
     def test_rng_sequence_is_reproducible(self) -> None:
         a = Rng(42)
         b = Rng(42)
-        self.assertEqual([a.random() for _ in range(20)], [b.random() for _ in range(20)])
+        self.assertEqual(
+            [a.random() for _ in range(20)], [b.random() for _ in range(20)]
+        )
 
     def test_rng_rejects_non_integer_seed(self) -> None:
         with self.assertRaises(InfraError):
@@ -197,14 +198,23 @@ class TestSelectorCliReporting(unittest.TestCase):
         )
         strict = run_script(
             "selector_demo.py",
-            ["--changed", "api/handlers.py", "--history", HISTORY_FRESH,
-             "--freshness", "0", "--json"],
+            [
+                "--changed",
+                "api/handlers.py",
+                "--history",
+                HISTORY_FRESH,
+                "--freshness",
+                "0",
+                "--json",
+            ],
         )
         self.assertEqual(strict.returncode, 0)
         baseline = json.loads(normal.stdout)
         payload = json.loads(strict.stdout)
         self.assertEqual(payload["freshness_window"], 0)
-        self.assertLess(len(baseline["selection"]["suites"]), len(payload["selection"]["suites"]))
+        self.assertLess(
+            len(baseline["selection"]["suites"]), len(payload["selection"]["suites"])
+        )
         self.assertTrue(payload["selection"]["full_suite_forced"])
 
     def test_stale_history_exits_zero_but_flags_degradation(self) -> None:
@@ -249,7 +259,14 @@ class TestLifetimeCliReporting(unittest.TestCase):
     def test_unsafe_admission_is_refused_non_zero(self) -> None:
         proc = run_script(
             "label_lifetime.py",
-            ["--scenario", "unsafe-admission", "--pools", POOLS, "--pool", "self-ephemeral-arm"],
+            [
+                "--scenario",
+                "unsafe-admission",
+                "--pools",
+                POOLS,
+                "--pool",
+                "self-ephemeral-arm",
+            ],
         )
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("REFUSED", proc.stdout)
@@ -257,7 +274,14 @@ class TestLifetimeCliReporting(unittest.TestCase):
     def test_unsafe_admission_refusal_names_the_risk(self) -> None:
         proc = run_script(
             "label_lifetime.py",
-            ["--scenario", "unsafe-admission", "--pools", POOLS, "--pool", "self-ephemeral-arm"],
+            [
+                "--scenario",
+                "unsafe-admission",
+                "--pools",
+                POOLS,
+                "--pool",
+                "self-ephemeral-arm",
+            ],
         )
         self.assertIn(
             "fork",
@@ -267,9 +291,16 @@ class TestLifetimeCliReporting(unittest.TestCase):
 
     def test_fixture_untrusted_fork_policy_cannot_report_healthy(self) -> None:
         spec = {
-            "pools": [{"id": "unsafe", "labels": ["linux"],
-                       "kind": "self-hosted-ephemeral", "capacity": 1,
-                       "admission": 1, "admission_mode": "untrusted-fork"}]
+            "pools": [
+                {
+                    "id": "unsafe",
+                    "labels": ["linux"],
+                    "kind": "self-hosted-ephemeral",
+                    "capacity": 1,
+                    "admission": 1,
+                    "admission_mode": "untrusted-fork",
+                }
+            ]
         }
         with tempfile.TemporaryDirectory() as directory:
             path = os.path.join(directory, "pools.json")
@@ -437,6 +468,48 @@ class TestQueueCliReporting(unittest.TestCase):
             "the redesigned scenario must not still be diverging at the end",
         )
 
+    def test_trajectory_figure_tracks_the_model(self) -> None:
+        """The figure is generated from the model, so it must not drift from it.
+
+        A hand-maintained chart silently stops matching the simulation. The
+        figure plots the two scenarios that share an arrival process; this
+        asserts each one's stated totals equal the model's real values.
+        """
+        with tempfile.TemporaryDirectory() as directory:
+            out = os.path.join(directory, "trajectory.svg")
+            proc = run_script("queue_trajectory_svg.py", [out])
+            self.assertEqual(proc.returncode, 0)
+            with open(out, encoding="utf-8") as handle:
+                svg = handle.read()
+
+        by_scenario = {
+            result["scenario"]: result
+            for result in json.loads(
+                run_script(
+                    "queue_vs_run.py", ["--compare", "--seed", "7", "--json"]
+                ).stdout
+            )["results"]
+        }
+        self.assertIn("backlog - capacity held at 14/tick", svg)
+        self.assertIn("redesign - journal architecture, 52/tick", svg)
+        for scenario in ("backlog", "redesign"):
+            result = by_scenario[scenario]
+            self.assertIn(
+                f"backlog {int(result['backlog_final'])}</text>",
+                svg,
+                f"figure must label the model's final backlog for {scenario}",
+            )
+            self.assertIn(
+                f"completed {int(result['run_total'])} of "
+                f"{int(result['queued_total'])} queued",
+                svg,
+                f"figure must state real completed/queued totals for {scenario}",
+            )
+        self.assertNotIn(
+            "nan",
+            svg.lower(),
+            "a non-finite coordinate means the figure was plotted from bad data",
+        )
 
     def test_determinism_across_processes(self) -> None:
         first = run_script("queue_vs_run.py", ["--compare", "--seed", "99", "--json"])
@@ -444,8 +517,12 @@ class TestQueueCliReporting(unittest.TestCase):
         self.assertEqual(first.stdout, second.stdout)
 
     def test_different_seeds_give_different_traffic(self) -> None:
-        first = run_script("queue_vs_run.py", ["--scenario", "backlog", "--seed", "1", "--json"])
-        second = run_script("queue_vs_run.py", ["--scenario", "backlog", "--seed", "2", "--json"])
+        first = run_script(
+            "queue_vs_run.py", ["--scenario", "backlog", "--seed", "1", "--json"]
+        )
+        second = run_script(
+            "queue_vs_run.py", ["--scenario", "backlog", "--seed", "2", "--json"]
+        )
         self.assertNotEqual(
             first.stdout,
             second.stdout,

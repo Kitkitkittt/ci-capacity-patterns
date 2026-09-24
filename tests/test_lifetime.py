@@ -19,11 +19,15 @@ import os
 import sys
 import unittest
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "examples"))
+sys.path.insert(
+    0,
+    os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "examples"
+    ),
+)
 
 from cisim import InfraError  # noqa: E402
 from cisim.lifetime import (  # noqa: E402
-    ADMISSION_MODES,
     Job,
     Pool,
     PoolKind,
@@ -150,8 +154,7 @@ class TestLifecycleInvariants(unittest.TestCase):
         self.assertGreater(
             result.jobs_served,
             1,
-            "a persistent pool of one runner must serve more than one "
-            "sequential job",
+            "a persistent pool of one runner must serve more than one sequential job",
         )
         self.assertEqual(
             result.created,
@@ -400,8 +403,7 @@ class TestFaultsSurface(unittest.TestCase):
         )
         self.assertTrue(
             result.errors,
-            "a provisioning failure must appear as an error, never as a silent "
-            "success",
+            "a provisioning failure must appear as an error, never as a silent success",
         )
         self.assertFalse(result.healthy)
         self.assertGreater(result.failed, 0)
@@ -462,9 +464,7 @@ class TestAdmissionSafety(unittest.TestCase):
     def test_simulation_enforces_the_admission_rule(self) -> None:
         pool = ephemeral_pool()
         with self.assertRaises(InfraError):
-            run_pool_simulation(
-                pool, simple_jobs(2), admission_mode="untrusted-fork"
-            )
+            run_pool_simulation(pool, simple_jobs(2), admission_mode="untrusted-fork")
 
 
 class TestPoolValidation(unittest.TestCase):

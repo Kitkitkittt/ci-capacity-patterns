@@ -19,7 +19,12 @@ import os
 import sys
 import unittest
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "examples"))
+sys.path.insert(
+    0,
+    os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "examples"
+    ),
+)
 
 from cisim import InfraError  # noqa: E402
 from cisim.selector import Selector, parse_history_rows  # noqa: E402
@@ -75,7 +80,9 @@ class TestNeverSelectsNothing(unittest.TestCase):
             "an unmapped file must fall back to the complete known suite set",
         )
         self.assertTrue(decision.selection.full_suite_forced)
-        self.assertEqual(decision.selection.unmapped_files, ("totally/unknown/path.rs",))
+        self.assertEqual(
+            decision.selection.unmapped_files, ("totally/unknown/path.rs",)
+        )
 
     def test_unmapped_file_is_reported_as_degraded(self) -> None:
         selector = make_selector()
@@ -203,9 +210,7 @@ class TestStalenessFailsClosed(unittest.TestCase):
         decision = selector.select(["api/handlers.py"], history)
         assert decision.selection is not None
         self.assertIn("api/handlers", decision.selection.suite_set())
-        self.assertEqual(
-            decision.selection.missing_history_suites, ("api/handlers",)
-        )
+        self.assertEqual(decision.selection.missing_history_suites, ("api/handlers",))
         self.assertTrue(decision.degraded)
 
     def test_missing_history_widens_the_selection_observably(self) -> None:
@@ -263,7 +268,9 @@ class TestUnknownIsNotEmpty(unittest.TestCase):
             parse_history_rows({"api/handlers": {"age": True, "status": "pass"}})
 
     def test_list_payload_is_accepted(self) -> None:
-        rows = parse_history_rows([{"suite": "api/handlers", "age": 2, "status": "pass"}])
+        rows = parse_history_rows(
+            [{"suite": "api/handlers", "age": 2, "status": "pass"}]
+        )
         self.assertEqual(rows, {"api/handlers": {"age": 2, "status": "pass"}})
 
 

@@ -177,6 +177,11 @@ workers horizontally scalable, not extra service per tick for free — and drain
 to zero. The same arrivals yield more completed work in `redesign`; backlog
 shows how much work remains unprocessed and whether the queue is diverging.
 
+![Queued events versus work performed, by tick](docs/diagrams/queue-trajectory.svg)
+
+The two panels are the same seeded model output, not an illustration: identical
+arrivals, different service ceilings.
+
 ### 3.2 `label_lifetime.py` — ephemeral labels and runner lifetime
 
 Simulates job arrival against a pool of ephemeral runners described by
@@ -238,6 +243,12 @@ Three rules encode the conservative posture:
   known failures, therefore nothing to run."
 
 ---
+
+![Test impact analysis architecture: singleton to horizontally scaled](docs/diagrams/ci-capacity.architecture.html)
+
+`docs/diagrams/ci-capacity.architecture.html` diagrams the cited Anthropic
+listener/selector architecture. Open it to pan, zoom, and trace relationships;
+the specification beside it is the source of truth.
 
 ## 4. Runner capacity: hosted, self-hosted, ephemeral
 
@@ -367,6 +378,7 @@ examples/
   queue_vs_run.py        backlog/queueing model: queued vs run
   label_lifetime.py      ephemeral runner lifecycle + label routing
   selector_demo.py       test impact selection + fail-closed staleness guard
+  queue_trajectory_svg.py  renders docs/diagrams/queue-trajectory.svg from the model
   cisim/                 shared library: seeded RNG, statistics, error vocabulary
     queue.py               arrival/service/backlog model
     lifetime.py            runner lifecycle, label routing, pool reconciliation
@@ -379,6 +391,10 @@ tests/
   run_all.py             single entry point for the above
 docs/
   SOURCES.md             sourced findings note, with provenance per claim
+  diagrams/
+    ci-capacity.architecture.json   interactive architecture diagram (Archify spec)
+    ci-capacity.architecture.html   rendered diagram; open in a browser
+    queue-trajectory.svg            measured backlog trajectories, both scenarios
 ```
 
 `tests/run_all.py` is the only test entry point and it uses `unittest` discovery,

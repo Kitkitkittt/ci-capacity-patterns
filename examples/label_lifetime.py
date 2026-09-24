@@ -205,8 +205,7 @@ def render_result(result: SimulationResult, pool: Pool, scenario: str) -> str:
         )
     else:
         lines.append(
-            "  verdict: OK (every job placed; all runner lifecycles terminated "
-            "cleanly)"
+            "  verdict: OK (every job placed; all runner lifecycles terminated cleanly)"
         )
     return "\n".join(lines)
 
@@ -276,9 +275,7 @@ def main(argv: list[str] | None = None) -> int:
         results.append((result, pool))
 
     if refusal:
-        message = (
-            "refused to simulate this configuration: " + refusal
-        )
+        message = "refused to simulate this configuration: " + refusal
         if args.json:
             print(
                 json.dumps(
@@ -338,7 +335,9 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     if args.report_dir:
-        blocks = [render_result(result, pool, args.scenario) for result, pool in results]
+        blocks = [
+            render_result(result, pool, args.scenario) for result, pool in results
+        ]
         write_report(
             args.report_dir,
             "lifetime_report.txt",

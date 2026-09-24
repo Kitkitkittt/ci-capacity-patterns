@@ -175,7 +175,9 @@ class Pool:
         even though only one is live at a time.
         """
         if self.is_full:
-            raise InfraError(f"pool {self.name!r} is at admission limit {self.admission}")
+            raise InfraError(
+                f"pool {self.name!r} is at admission limit {self.admission}"
+            )
         runner = Runner(
             runner_id=f"{prefix}-{self.total_ever_created + 1:03d}",
             pool=self.name,
@@ -188,7 +190,9 @@ class Pool:
     def idle_runners(self, required: Sequence[str]) -> list[Runner]:
         return [r for r in self.live_runners if r.can_accept(required)]
 
-    def retire(self, runner: Runner, state: RunnerState = RunnerState.DESTROYED) -> None:
+    def retire(
+        self, runner: Runner, state: RunnerState = RunnerState.DESTROYED
+    ) -> None:
         """Move a runner to a terminal state.
 
         Terminal runners stop counting against the concurrent limit, which is

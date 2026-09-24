@@ -146,10 +146,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--graph",
         default=DEFAULT_GRAPH,
         metavar="FILE",
-        help=(
-            "dependency graph JSON (default: "
-            f"{os.path.relpath(DEFAULT_GRAPH)})"
-        ),
+        help=(f"dependency graph JSON (default: {os.path.relpath(DEFAULT_GRAPH)})"),
     )
     parser.add_argument(
         "--freshness",
@@ -293,9 +290,7 @@ def main(argv: list[str] | None = None) -> int:
             "(conservative full runs selected; not a silent skip)"
         )
     else:
-        text_lines.append(
-            "verdict: OK (selection derived entirely from fresh history)"
-        )
+        text_lines.append("verdict: OK (selection derived entirely from fresh history)")
 
     text_report = render_report("TEST IMPACT SELECTION", text_lines)
 
