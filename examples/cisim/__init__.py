@@ -144,7 +144,6 @@ class Rng:
         if mean == 0:
             return 0
 
-
         limit = math.exp(-mean)
         product = 1.0
         count = 0

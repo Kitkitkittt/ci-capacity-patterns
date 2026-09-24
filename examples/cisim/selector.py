@@ -202,7 +202,9 @@ class Selector:
         normalised: dict[str, tuple[str, ...]] = {}
         for key, suites in graph.items():
             if not isinstance(key, str) or not key:
-                raise InfraError(f"dependency graph key must be a non-empty string: {key!r}")
+                raise InfraError(
+                    f"dependency graph key must be a non-empty string: {key!r}"
+                )
             if not isinstance(suites, Sequence) or isinstance(suites, (str, bytes)):
                 raise InfraError(f"suites for {key!r} must be a sequence of names")
             cleaned = tuple(str(s) for s in suites if isinstance(s, str) and s)
@@ -354,8 +356,7 @@ class Selector:
                     suite=suite,
                     code="widened-full-suite",
                     detail=(
-                        "selected because "
-                        + _widening_cause(unmapped, stale, missing)
+                        "selected because " + _widening_cause(unmapped, stale, missing)
                     ),
                 )
 
@@ -395,9 +396,13 @@ def _widening_cause(
     """Human-readable reason the selection escalated to the full suite."""
     causes: list[str] = []
     if unmapped:
-        causes.append("changed file(s) with no dependency-graph entry: " + ", ".join(unmapped))
+        causes.append(
+            "changed file(s) with no dependency-graph entry: " + ", ".join(unmapped)
+        )
     if stale:
         causes.append("impacted suite(s) with stale history: " + ", ".join(stale))
     if missing:
-        causes.append("impacted suite(s) with no recorded history: " + ", ".join(missing))
+        causes.append(
+            "impacted suite(s) with no recorded history: " + ", ".join(missing)
+        )
     return "; ".join(causes) if causes else "an unknown reason"

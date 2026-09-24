@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Test Impact Analysis: Redesigning the Listener",
+    "quality_profile": "showcase",
+    "legend": { "mode": "auto" },
+    "viewBox": [1194, 620]
+  },
+  "components": [
+    { "id": "pr_queue", "type": "external", "label": "Opened PRs", "sublabel": "agent-authored changes", "pos": [40, 250], "size": [140, 62] },
+    { "id": "selector", "type": "frontend", "label": "Selector", "sublabel": "picks tests per PR", "pos": [250, 110], "size": [152, 62] },
+    { "id": "history", "type": "database", "label": "Per-test History", "sublabel": "read by the selector", "pos": [560, 110], "size": [172, 62] },
+    { "id": "consumer", "type": "backend", "label": "Roll-up Consumer", "sublabel": "rolls up every few seconds", "pos": [560, 300], "size": [172, 62] },
+    { "id": "journal", "type": "messagebus", "label": "Journal", "sublabel": "in-memory store", "pos": [560, 470], "size": [172, 62], "tag": "redesign" },
+    { "id": "listener", "type": "backend", "label": "Listener", "sublabel": "records every CI result", "pos": [250, 470], "size": [160, 62] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Test impact analysis service", "wraps": ["selector", "history", "consumer", "journal", "listener"], "pad": 24 }
+  ],
+  "connections": [
+    { "from": "pr_queue", "to": "selector", "label": "changed files", "variant": "emphasis" },
+    { "from": "history", "to": "selector", "label": "read history", "variant": "dashed" },
+    { "from": "consumer", "to": "history", "label": "per-test rows", "variant": "emphasis" },
+    { "from": "journal", "to": "consumer", "label": "roll up", "variant": "dashed" },
+    { "from": "listener", "to": "journal", "label": "append each result", "variant": "emphasis" }
+  ],
+  "cards": [
+    { "dot": "amber", "title": "What Broke", "items": ["One writer kept the running history, so it could not shard", "The listener fell behind the PR queue", "20 min of lag left tens of thousands of results unapplied", "Stale history meant running flaky or already-failing tests"] },
+    { "dot": "rose", "title": "Three Patches", "items": ["Bigger machine: 70 days", "Per-package shards: 29 days", "Daily restarts: under a day", "Restarts also dropped results, widening the lag"] },
+    { "dot": "cyan", "title": "The Redesign", "items": ["Any listener worker processes any result", "Workers append to a journal and keep nothing in memory", "A separate consumer rolls the journal up per test", "The selector reads history quickly; state left the process"] }
+  ]
+}
