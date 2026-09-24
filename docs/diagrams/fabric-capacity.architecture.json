@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Two paths: today's CI and a candidate burst-compute pilot",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "request", "type": "external", "label": "Job request", "sublabel": "API or scheduled trigger", "pos": [48, 190], "size": [144, 64] },
+    { "id": "edge", "type": "cloud", "label": "Cloudflare Worker", "sublabel": "candidate controller", "tag": "PROPOSED", "pos": [270, 190], "size": [170, 64] },
+    { "id": "queue", "type": "messagebus", "label": "Cloudflare Queue", "sublabel": "bounded handoff", "tag": "PROPOSED", "pos": [525, 190], "size": [160, 64] },
+    { "id": "gate", "type": "security", "label": "Admission gate", "sublabel": "Role + data + budget", "tag": "REQUIRED", "pos": [780, 190], "size": [168, 64] },
+    { "id": "owned", "type": "backend", "label": "Admitted Node Slot", "sublabel": "sustained / sensitive", "tag": "PILOT A TARGET", "pos": [1050, 112], "size": [178, 66] },
+    { "id": "modal", "type": "cloud", "label": "Modal", "sublabel": "burst CPU / GPU", "tag": "PILOT B ONLY", "pos": [1050, 278], "size": [178, 66] },
+    { "id": "receipt", "type": "security", "label": "Signed callback", "sublabel": "idempotent receipt", "tag": "PROPOSED", "pos": [1050, 400], "size": [178, 64] },
+    { "id": "actions", "type": "external", "label": "GitHub Actions", "sublabel": "current CI trigger", "tag": "CURRENT", "pos": [270, 620], "size": [170, 64] },
+    { "id": "controller", "type": "backend", "label": "Thin controller", "sublabel": "waits for sandbox", "tag": "CURRENT", "pos": [525, 620], "size": [160, 64] },
+    { "id": "novita", "type": "cloud", "label": "Novita sandbox", "sublabel": "ephemeral CI compute", "tag": "CURRENT", "pos": [780, 620], "size": [168, 64] }
+  ],
+  "connections": [
+    { "from": "request", "to": "edge", "label": "authorize" },
+    { "from": "edge", "to": "queue", "label": "enqueue" },
+    { "from": "queue", "to": "gate", "label": "claim job" },
+    { "from": "gate", "to": "owned", "label": "admitted Role", "variant": "emphasis" },
+    { "from": "gate", "to": "modal", "label": "if admitted", "variant": "dashed" },
+    { "from": "owned", "to": "receipt", "label": "complete", "fromSide": "right", "toSide": "right", "via": [[1260, 145], [1260, 432]], "labelAt": [1232, 358] },
+    { "from": "modal", "to": "receipt", "label": "complete", "variant": "dashed", "fromSide": "bottom", "toSide": "top", "labelDy": 24 },
+    { "from": "receipt", "to": "edge", "label": "record final state", "variant": "dashed", "fromSide": "left", "toSide": "bottom", "via": [[355, 432]] },
+    { "from": "actions", "to": "controller", "label": "CI job" },
+    { "from": "controller", "to": "novita", "label": "run.sh", "variant": "emphasis" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Candidate, not live", "items": ["Cloudflare owns job state; Modal is only an execution target", "Pilot A proves Queue + callback with one admitted worker", "Pilot B tries one bounded public/synthetic Modal job"] },
+    { "dot": "amber", "title": "Fail closed", "items": ["Node Slot Roles and external providers need separate admission", "Budget and data class gate before dispatch", "Completion requires an idempotent callback and receipt"] },
+    { "dot": "emerald", "title": "Current CI stays", "items": ["GitHub Actions controller waits for an ephemeral Novita sandbox", "This is a separate CI path, not a Cloudflare deployment", "No measured speedup or queue reduction is claimed"] }
+  ]
+}

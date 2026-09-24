@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 570" role="img" aria-labelledby="title desc" font-family="ui-sans-serif,system-ui,sans-serif">
+<title id="title">Weekly engineering activity in two access-controlled projects</title>
+<desc id="desc">Two bar panels show weekly GitHub Actions workflow runs and pull requests opened, for generic fabric implementation and data platform project categories, from August 3 to September 24, 2026. Final week is partial. This is activity, not queue time or speedup.</desc>
+<rect width="1040" height="570" fill="#fff"/>
+<text x="66" y="34" font-size="20" font-weight="700" fill="#0f172a">Weekly CI activity, not CI capacity</text>
+<text x="66" y="57" font-size="12" fill="#475569">Observed Actions runs and opened PRs · UTC weeks · Aug 3 – Sep 24, 2026</text>
+<rect x="66" y="76" width="12" height="12" rx="2" fill="#0891b2"/>
+<text x="86" y="87" font-size="12" fill="#334155">Fabric implementation</text>
+<rect x="281" y="76" width="12" height="12" rx="2" fill="#7c3aed"/>
+<text x="301" y="87" font-size="12" fill="#334155">Data platform</text>
+<text x="66" y="119" font-size="15" font-weight="700" fill="#0f172a">Actions workflow runs / week</text>
+<line x1="66" x2="1000" y1="310.0" y2="310.0" stroke="#e2e8f0"/>
+<text x="55" y="314.0" text-anchor="end" font-size="11" fill="#475569">0</text>
+<line x1="66" x2="1000" y1="266.5" y2="266.5" stroke="#e2e8f0"/>
+<text x="55" y="270.5" text-anchor="end" font-size="11" fill="#475569">100</text>
+<line x1="66" x2="1000" y1="223.0" y2="223.0" stroke="#e2e8f0"/>
+<text x="55" y="227.0" text-anchor="end" font-size="11" fill="#475569">200</text>
+<line x1="66" x2="1000" y1="179.5" y2="179.5" stroke="#e2e8f0"/>
+<text x="55" y="183.5" text-anchor="end" font-size="11" fill="#475569">300</text>
+<line x1="66" x2="1000" y1="136.0" y2="136.0" stroke="#e2e8f0"/>
+<text x="55" y="140.0" text-anchor="end" font-size="11" fill="#475569">400</text>
+<text x="90" y="305.0" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">0</text>
+<rect x="114" y="307.8" width="30" height="2.2" rx="2" fill="#7c3aed"/>
+<text x="129" y="302.8" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">5</text>
+<text x="206" y="305.0" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">0</text>
+<rect x="230" y="246.5" width="30" height="63.5" rx="2" fill="#7c3aed"/>
+<text x="245" y="241.5" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">146</text>
+<text x="322" y="305.0" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">0</text>
+<rect x="346" y="176.0" width="30" height="134.0" rx="2" fill="#7c3aed"/>
+<text x="361" y="171.0" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">308</text>
+<rect x="423" y="253.9" width="30" height="56.1" rx="2" fill="#0891b2"/>
+<text x="438" y="248.9" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">129</text>
+<rect x="462" y="184.7" width="30" height="125.3" rx="2" fill="#7c3aed"/>
+<text x="477" y="179.7" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">288</text>
+<rect x="539" y="252.1" width="30" height="57.9" rx="2" fill="#0891b2"/>
+<text x="554" y="247.1" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">133</text>
+<rect x="578" y="252.6" width="30" height="57.4" rx="2" fill="#7c3aed"/>
+<text x="593" y="247.6" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">132</text>
+<rect x="655" y="290.9" width="30" height="19.1" rx="2" fill="#0891b2"/>
+<text x="670" y="285.9" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">44</text>
+<rect x="694" y="192.6" width="30" height="117.5" rx="2" fill="#7c3aed"/>
+<text x="709" y="187.6" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">270</text>
+<rect x="771" y="305.6" width="30" height="4.3" rx="2" fill="#0891b2"/>
+<text x="786" y="300.6" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">10</text>
+<rect x="810" y="250.8" width="30" height="59.2" rx="2" fill="#7c3aed"/>
+<text x="825" y="245.8" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">136</text>
+<rect x="887" y="304.3" width="30" height="5.7" rx="2" fill="#0891b2"/>
+<text x="902" y="299.3" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">13</text>
+<rect x="926" y="147.3" width="30" height="162.7" rx="2" fill="#7c3aed"/>
+<text x="941" y="142.3" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">374</text>
+<text x="66" y="342" font-size="15" font-weight="700" fill="#0f172a">Pull requests opened / week</text>
+<line x1="66" x2="1000" y1="500.0" y2="500.0" stroke="#e2e8f0"/>
+<text x="55" y="504.0" text-anchor="end" font-size="11" fill="#475569">0</text>
+<line x1="66" x2="1000" y1="464.8" y2="464.8" stroke="#e2e8f0"/>
+<text x="55" y="468.8" text-anchor="end" font-size="11" fill="#475569">10</text>
+<line x1="66" x2="1000" y1="429.5" y2="429.5" stroke="#e2e8f0"/>
+<text x="55" y="433.5" text-anchor="end" font-size="11" fill="#475569">20</text>
+<line x1="66" x2="1000" y1="394.2" y2="394.2" stroke="#e2e8f0"/>
+<text x="55" y="398.2" text-anchor="end" font-size="11" fill="#475569">30</text>
+<line x1="66" x2="1000" y1="359.0" y2="359.0" stroke="#e2e8f0"/>
+<text x="55" y="363.0" text-anchor="end" font-size="11" fill="#475569">40</text>
+<text x="90" y="495.0" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">0</text>
+<rect x="114" y="404.8" width="30" height="95.2" rx="2" fill="#7c3aed"/>
+<text x="129" y="399.8" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">27</text>
+<text x="109" y="520" text-anchor="middle" font-size="11" fill="#475569">08-03</text>
+<text x="206" y="495.0" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">0</text>
+<rect x="230" y="397.8" width="30" height="102.2" rx="2" fill="#7c3aed"/>
+<text x="245" y="392.8" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">29</text>
+<text x="225" y="520" text-anchor="middle" font-size="11" fill="#475569">08-10</text>
+<text x="322" y="495.0" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">0</text>
+<rect x="346" y="359.0" width="30" height="141.0" rx="2" fill="#7c3aed"/>
+<text x="361" y="354.0" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">40</text>
+<text x="341" y="520" text-anchor="middle" font-size="11" fill="#475569">08-17</text>
+<rect x="423" y="433.0" width="30" height="67.0" rx="2" fill="#0891b2"/>
+<text x="438" y="428.0" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">19</text>
+<rect x="462" y="436.6" width="30" height="63.5" rx="2" fill="#7c3aed"/>
+<text x="477" y="431.6" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">18</text>
+<text x="457" y="520" text-anchor="middle" font-size="11" fill="#475569">08-24</text>
+<rect x="539" y="464.8" width="30" height="35.2" rx="2" fill="#0891b2"/>
+<text x="554" y="459.8" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">10</text>
+<rect x="578" y="478.9" width="30" height="21.1" rx="2" fill="#7c3aed"/>
+<text x="593" y="473.9" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">6</text>
+<text x="573" y="520" text-anchor="middle" font-size="11" fill="#475569">08-31</text>
+<rect x="655" y="464.8" width="30" height="35.2" rx="2" fill="#0891b2"/>
+<text x="670" y="459.8" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">10</text>
+<rect x="694" y="468.3" width="30" height="31.7" rx="2" fill="#7c3aed"/>
+<text x="709" y="463.3" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">9</text>
+<text x="689" y="520" text-anchor="middle" font-size="11" fill="#475569">09-07</text>
+<rect x="771" y="489.4" width="30" height="10.6" rx="2" fill="#0891b2"/>
+<text x="786" y="484.4" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">3</text>
+<rect x="810" y="436.6" width="30" height="63.5" rx="2" fill="#7c3aed"/>
+<text x="825" y="431.6" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">18</text>
+<text x="805" y="520" text-anchor="middle" font-size="11" fill="#475569">09-14</text>
+<rect x="887" y="485.9" width="30" height="14.1" rx="2" fill="#0891b2"/>
+<text x="902" y="480.9" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">4</text>
+<rect x="926" y="394.2" width="30" height="105.8" rx="2" fill="#7c3aed"/>
+<text x="941" y="389.2" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">30</text>
+<text x="921" y="520" text-anchor="middle" font-size="11" fill="#475569">09-21</text>
+<text x="66" y="535" font-size="11" fill="#475569">Each bar counts events, not jobs queued or CPU time. Skipped runs are included.</text>
+<text x="66" y="553" font-size="11" fill="#475569">Last week partial; snapshot through 2026-09-24T08:43:24Z. No before/after performance claim.</text>
+</svg>

@@ -1,0 +1,117 @@
+{
+  "source": "GitHub REST Actions workflow_runs.created_at and Search Issues type:pr created",
+  "window_utc": [
+    "2026-08-03",
+    "2026-09-24"
+  ],
+  "captured_through_utc": "2026-09-24T08:43:24Z",
+  "categories": [
+    "Fabric implementation",
+    "Data platform"
+  ],
+  "definition": "Workflow runs include successes, failures, skipped and cancelled; PRs count creation, not merge; last week is partial.",
+  "weeks": [
+    {
+      "week": "2026-08-03",
+      "runs": [
+        0,
+        5
+      ],
+      "prs": [
+        0,
+        27
+      ]
+    },
+    {
+      "week": "2026-08-10",
+      "runs": [
+        0,
+        146
+      ],
+      "prs": [
+        0,
+        29
+      ]
+    },
+    {
+      "week": "2026-08-17",
+      "runs": [
+        0,
+        308
+      ],
+      "prs": [
+        0,
+        40
+      ]
+    },
+    {
+      "week": "2026-08-24",
+      "runs": [
+        129,
+        288
+      ],
+      "prs": [
+        19,
+        18
+      ]
+    },
+    {
+      "week": "2026-08-31",
+      "runs": [
+        133,
+        132
+      ],
+      "prs": [
+        10,
+        6
+      ]
+    },
+    {
+      "week": "2026-09-07",
+      "runs": [
+        44,
+        270
+      ],
+      "prs": [
+        10,
+        9
+      ]
+    },
+    {
+      "week": "2026-09-14",
+      "runs": [
+        10,
+        136
+      ],
+      "prs": [
+        3,
+        18
+      ]
+    },
+    {
+      "week": "2026-09-21",
+      "runs": [
+        13,
+        374
+      ],
+      "prs": [
+        4,
+        30
+      ]
+    }
+  ],
+  "run_conclusions": [
+    {
+      "skipped": 128,
+      "failure": 93,
+      "cancelled": 5,
+      "success": 103
+    },
+    {
+      "skipped": 376,
+      "success": 969,
+      "cancelled": 85,
+      "failure": 229
+    }
+  ]
+}
