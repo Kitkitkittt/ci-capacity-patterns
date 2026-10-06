@@ -17,12 +17,14 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from datetime import date, datetime, timezone
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXAMPLES = os.path.join(REPO, "examples")
 FIXTURES = os.path.join(EXAMPLES, "fixtures")
 sys.path.insert(0, EXAMPLES)
 
+import activity_figure  # noqa: E402
 from cisim import Degraded, InfraError, Rng, load_json, percentile  # noqa: E402
 
 GRAPH = os.path.join(FIXTURES, "dependency_graph.json")
@@ -529,6 +531,55 @@ class TestQueueCliReporting(unittest.TestCase):
             "the seed must actually drive the arrival process, or the "
             "determinism guarantee is vacuous",
         )
+
+
+class TestActivityFigureBoundaries(unittest.TestCase):
+    """Week boundaries for the weekly collector.
+
+    ``--start`` is a Monday, so a run created that Monday is week 0 while one at
+    23:59:59 the prior day is outside the window and must be dropped rather than
+    folded into week 0.
+    """
+
+    def _collect(self, start: date, cutoff: datetime, runs: list[dict]) -> dict:
+        page = {"workflow_runs": runs}
+
+        def fake_github(path: str) -> dict:
+            return page if "/actions/runs" in path else {"total_count": 1}
+
+        original = activity_figure.github
+        activity_figure.github = fake_github
+        try:
+            return activity_figure.collect(["owner/fabric", "owner/data"], start, cutoff)
+        finally:
+            activity_figure.github = original
+
+    def test_run_membership_is_by_utc_week(self) -> None:
+        snapshot = self._collect(
+            date(2026, 8, 3),
+            datetime(2026, 8, 10, 12, 0, tzinfo=timezone.utc),
+            [
+                {"created_at": "2026-08-10T09:00:00Z", "conclusion": "success", "status": "completed"},
+                {"created_at": "2026-08-09T23:59:59Z", "conclusion": "failure", "status": "completed"},
+                {"created_at": "2026-08-02T23:59:59Z", "conclusion": "success", "status": "completed"},
+            ],
+        )
+        self.assertEqual(snapshot["weeks"][0]["runs"][0], 1, "Aug 9 belongs to week 0")
+        self.assertEqual(snapshot["weeks"][1]["runs"][0], 1, "Aug 10 opens week 1")
+        self.assertEqual(
+            snapshot["run_conclusions"][0],
+            {"success": 1, "failure": 1},
+            "the Aug 2 run predates --start and must not be counted",
+        )
+        self.assertEqual(len(snapshot["weeks"]), 2, "window spans start..cutoff, not a fixed eight")
+
+    def test_collect_rejects_a_non_monday_start(self) -> None:
+        with self.assertRaises(ValueError):
+            self._collect(date(2026, 8, 4), datetime(2026, 8, 10, tzinfo=timezone.utc), [])
+
+    def test_collect_rejects_a_naive_cutoff(self) -> None:
+        with self.assertRaises(ValueError):
+            self._collect(date(2026, 8, 3), datetime(2026, 8, 10, 12, 0), [])
 
 
 if __name__ == "__main__":

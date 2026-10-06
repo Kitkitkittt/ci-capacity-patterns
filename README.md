@@ -24,12 +24,17 @@ $ python3 tests/run_all.py
 **In plain terms:** these bars count change requests and automated check
 events. They do not show how long anyone waited or whether capacity kept up.
 
-**[OBSERVED]** Across UTC weeks beginning Aug 3–Sep 21, 2026, the fabric
-implementation category recorded **329 Actions workflow runs / 46 opened PRs**;
-the data platform category recorded **1,659 runs / 177 opened PRs**. The final
-week is only Sep 21–24 (through 08:43 UTC). Runs include **504 skipped** across
-both categories; these are events, not executed jobs, queue times, or a measure
-of engineering output. The [frozen weekly counts and collection method](docs/SOURCES.md#31-bounded-engineering-activity-snapshot)
+**[OBSERVED]** Across UTC weeks beginning Aug 3–Oct 5, 2026, the fabric
+implementation category recorded **415 Actions workflow runs / 55 opened PRs**;
+the data platform category recorded **2,457 runs / 216 opened PRs**. The final
+week covers only Oct 5–6 through 04:00:23 UTC; it is not comparable to a full
+week and cannot establish a decline. Runs include **894 skipped** across both categories; these
+are events, not executed jobs, queue times, or a measure of engineering output.
+The **success fraction among success/failure workflow conclusions** is
+**107/224 (47.8%)** for fabric implementation and
+**1351/1639 (82.4%)** for data platform; cancelled, skipped, pending, and
+unrecorded outcomes are excluded from that fraction and are not failures. The
+[frozen weekly counts and collection method](docs/SOURCES.md#31-bounded-engineering-activity-snapshot)
 are public-safe aggregates. CircleCI is not part of this series.
 
 ### 2. The current bottleneck: a controller waits while a sandbox works
@@ -112,6 +117,23 @@ public repository. Only aggregate facts are published here.
   through its environment. What propagates to the sandbox is unverified; no
   isolation or credential-safety claim is made here. Fabric Node Slot admission
   labels are **not** GitHub or CircleCI runner registration or authorization.
+
+Historical execution samples, each population contributing **one** job (n=1;
+not a distribution):
+
+| Population | Job date (UTC) | Outcome | Wall duration |
+| --- | --- | --- | --- |
+| Fabric implementation | 2026-10-01 | Six canonical pipeline stages passed | 2,472 s |
+| Data platform | 2026-10-02 | Acceptance job succeeded | 1,140 s |
+
+For the fabric sample the behavioral-test stage was 2,384 s of the job. Queue
+delay is **unrecorded** — the job-creation time was not retained — so these
+samples imply no percentile, median, speedup, or cost result, and they are not a
+before/after queue measurement. They are also not current branch health: both
+projects' latest branches still include failing and skipped runs, and the
+data-platform figure measures its acceptance suite, not every repository gate.
+Details and sanitization limits are in
+[the sourced note](docs/SOURCES.md#33-bounded-execution-case-study-historical-n1).
 
 The observed bottleneck is controller occupancy, **not** Anthropic's
 single-writer listener lag in §2. Neither is claimed resolved. See the
@@ -399,13 +421,13 @@ examples/
 tests/
   test_selection.py      selection correctness and staleness invariants
   test_lifetime.py       runner lifecycle and label-routing invariants
-  test_reporting.py      infra/error paths never report success
+  test_reporting.py      infra/error paths never report success; collector week edges
   run_all.py             single entry point for the above
 docs/
   SOURCES.md             sourced findings note, with provenance per claim
   diagrams/
-    activity-snapshot.json           bounded, anonymized weekly GitHub aggregates
-    activity-weekly.svg              observed activity, including skipped runs
+    activity-snapshot.json           bounded weekly GitHub aggregates by UTC week (runs, PRs, outcomes)
+    activity-weekly.svg              observed weekly activity and run-outcome composition
     controller-occupancy.svg         observed CI handoff and older wait durations
     fabric-capacity.architecture.json  proposed/current routing specification
     fabric-capacity.architecture.html  standalone interactive architecture

@@ -2,14 +2,15 @@
   "source": "GitHub REST Actions workflow_runs.created_at and Search Issues type:pr created",
   "window_utc": [
     "2026-08-03",
-    "2026-09-24"
+    "2026-10-06"
   ],
-  "captured_through_utc": "2026-09-24T08:43:24Z",
+  "captured_through_utc": "2026-10-06T04:00:23Z",
+  "collected_at_utc": "2026-10-06T04:31:29Z",
   "categories": [
     "Fabric implementation",
     "Data platform"
   ],
-  "definition": "Workflow runs include successes, failures, skipped and cancelled; PRs count creation, not merge; last week is partial.",
+  "definition": "Workflow runs counted by created_at; PRs by creation, not merge. Run outcomes are read at collected_at_utc, not reconstructed as of captured_through_utc. The final week is partial. An outcome is the run conclusion when present, otherwise its lifecycle status (for example queued or in_progress); 'unrecorded' means the API returned neither at collection, so no run is dropped.",
   "weeks": [
     {
       "week": "2026-08-03",
@@ -91,27 +92,49 @@
     {
       "week": "2026-09-21",
       "runs": [
-        13,
-        374
+        64,
+        788
       ],
       "prs": [
-        4,
-        30
+        7,
+        51
+      ]
+    },
+    {
+      "week": "2026-09-28",
+      "runs": [
+        35,
+        248
+      ],
+      "prs": [
+        6,
+        13
+      ]
+    },
+    {
+      "week": "2026-10-05",
+      "runs": [
+        0,
+        136
+      ],
+      "prs": [
+        0,
+        5
       ]
     }
   ],
   "run_conclusions": [
     {
-      "skipped": 128,
-      "failure": 93,
-      "cancelled": 5,
-      "success": 103
+      "failure": 117,
+      "success": 107,
+      "cancelled": 7,
+      "skipped": 184
     },
     {
-      "skipped": 376,
-      "success": 969,
-      "cancelled": 85,
-      "failure": 229
+      "skipped": 710,
+      "success": 1351,
+      "failure": 288,
+      "cancelled": 108
     }
   ]
 }
