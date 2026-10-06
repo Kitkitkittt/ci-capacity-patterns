@@ -315,33 +315,63 @@ control plane.
 
 ### 3.1 Bounded engineering-activity snapshot
 
-**[OBSERVED, through 2026-09-24T08:43:24Z]** An authorized read of two
-access-controlled engineering projects counted GitHub Actions **workflow runs**
-by `created_at` and pull requests **opened** by creation date for UTC weeks
-starting 2026-08-03 through the partial week ending 2026-09-24. The generic
-categories are *fabric implementation* and *data platform*. The totals in this
-window are 329 and 1,659 workflow runs respectively, and 46 and 177 opened
-PRs. These are two distinct project populations, not a combined throughput
-benchmark. The [aggregate snapshot](diagrams/activity-snapshot.json) records
-the eight weekly pairs and conclusion counts; the [figure](diagrams/activity-weekly.svg)
-plots those same counts. Run totals include success, failure, cancellation, and
-**504 skipped runs** across both projects. A workflow run is not a job, minute,
-queued task, or measure of engineering headcount. PR creation is not a merge.
-The last week covers only Sep 21–24 to the capture instant; earlier weeks are
-seven-day UTC windows. CircleCI is **not** counted in this series.
+**[OBSERVED, created by 2026-10-06T04:00:23Z; outcomes read 2026-10-06T04:31:29Z]**
+An authorized read of two access-controlled engineering projects counted GitHub
+Actions **workflow runs** by `created_at` and pull requests **opened** by
+creation date for UTC weeks starting 2026-08-03 through the partial week
+beginning 2026-10-05. The generic categories are *fabric implementation* and
+*data platform*. The totals in this window are **415** and **2,457** workflow
+runs respectively, and **55** and **216** opened PRs. These are two distinct
+project populations, not a combined throughput benchmark. The
+[aggregate snapshot](diagrams/activity-snapshot.json) records the **ten** weekly
+pairs and the outcome counts; the [figure](diagrams/activity-weekly.svg) plots
+those same counts plus a per-category run-outcome composition panel read at
+collection. Run totals include success, failure, cancellation, and **894 skipped
+runs** across both projects. A workflow run is not a job, minute, queued task, or
+measure of engineering headcount. PR creation is not a merge. The last week
+covers only Oct 5–6 to the creation cutoff, so it is not comparable to a full
+week and cannot establish a decline; earlier weeks are seven-day UTC windows. CircleCI is **not**
+counted in this series.
+
+**Success fraction among success/failure workflow conclusions.** Among runs whose
+outcome was a recorded success or failure conclusion, the success fraction
+is **107/224 = 47.8%** (fabric implementation) and **1351/1639 = 82.4%** (data
+platform). The fraction excludes cancelled, skipped, pending lifecycle states,
+and unrecorded outcomes: those are neither successes nor failures and are not in
+the denominator. It is a descriptive ratio over observed conclusions only — not
+a required-check pass rate and not a queue or speed claim.
 
 **[OURS]** Reproduce the SVG offline with `python3 examples/activity_figure.py`;
-an authorized operator may refresh the frozen source once with
-`python3 examples/activity_figure.py --collect OWNER/FABRIC_REPO
-OWNER/DATA_REPO --cutoff 2026-09-24T08:43:24Z` (substitute access-controlled
-repository paths locally; do not publish them). Collection reads GitHub REST
-`repos/{owner}/{repo}/actions/runs?per_page=100&page=N` through the lower
-date bound and `search/issues?q=repo:{owner}/{repo} type:pr created:START..END`
-for each week. It stores only aggregate categories, UTC dates, counts, and
-conclusions. Source availability and historical retention can change, so
-recollection at a later date is not guaranteed to yield the same results;
-the checked-in aggregate is the frozen evidence. Neither this count nor the
-historical controller durations in the README establish a queue improvement.
+rendering needs only the committed aggregate. An authorized operator may refresh
+the frozen source once with `python3 examples/activity_figure.py --collect
+OWNER/FABRIC_REPO OWNER/DATA_REPO --start 2026-08-03 --cutoff <ISO8601 Z>`
+(substitute access-controlled repository paths locally; do not publish them).
+`--start` must be a Monday (default 2026-08-03); `--cutoff` is the run/PR
+creation instant and defaults to now. The week count and the figure's axis scales
+are derived from `--start`..`--cutoff`, so a later refresh extends the series and
+never clips a value or needs an edit to the plotting code.
+
+**Population and frequency.** The unit is a GitHub Actions **workflow run**
+counted by `created_at`, plus **pull requests opened** by creation date, bucketed
+into seven-day UTC weeks. Two distinct project populations (fabric implementation,
+data platform) are reported side by side and are **not** summed. Reads are
+`repos/{owner}/{repo}/actions/runs?per_page=100&page=N` paged from newest until a
+page reaches before `--start` (pagination is bounded and stops on a crossed or
+short page), and `search/issues?q=repo:{owner}/{repo} type:pr created:START..END`
+per week; an `incomplete_results` response raises an error rather than freezing an
+undercount. It stores only aggregate categories, UTC dates, counts, and
+conclusion counts.
+
+**Limits.** Outcome counts were read during collection, which completed at
+`collected_at_utc`, and are **not** reconstructed as of `captured_through_utc`:
+a run created before the cutoff may finish afterwards, so the two instants can
+differ and no "as-of-cutoff" outcome state is claimed. An outcome is the run's
+recorded conclusion when present, otherwise its lifecycle status (for example
+queued or in_progress); a run the API returned with neither is counted under
+`unrecorded`, never dropped. Source availability and retention change over time,
+so recollection later is not guaranteed to repeat a result; the checked-in
+aggregate is the frozen evidence. Neither this count nor the historical
+controller durations in the README establish a queue improvement.
 
 ### 3.2 Candidate control-plane and external-compute boundary
 
@@ -366,6 +396,35 @@ candidate: [Cloudflare Workers](https://developers.cloudflare.com/workers/platfo
 [Modal pricing](https://modal.com/pricing). Verify prices and limits again before
 implementation. None of those provider references proves that the candidate
 route is installed, cheaper, faster, or authorized for non-public data.
+
+### 3.3 Bounded execution case study (historical, n=1)
+
+**[OBSERVED, historical; n=1 per population]** Two separate access-controlled
+projects each contributed **one** executed job to this note. They are distinct
+populations, not a combined benchmark, and the sample is a single job per
+population — not a distribution and not current branch health.
+
+| Population | Job date (UTC) | Outcome | Wall duration |
+| --- | --- | --- | --- |
+| Fabric implementation | 2026-10-01 | Six canonical pipeline stages passed | 2,472 s |
+| Data platform | 2026-10-02 | Acceptance job succeeded | 1,140 s |
+
+For the fabric-implementation sample, the behavioral-test stage alone accounted
+for 2,384 s of the 2,472 s job — about 96% of its wall time. For the data-platform
+sample, the measured job is the **acceptance** suite, not every repository gate.
+
+**Queue delay is UNRECORDED.** The job-creation timestamp was not retained, so
+wait-before-start cannot be derived from these samples. No percentile, median,
+speedup, or cost claim follows from them. Other branches have independent
+check outcomes; these historical samples do not establish that either project's
+required checks are currently green.
+
+**[OURS]** Sanitization: no run identifiers, repository paths, or raw logs are
+published; source commits were verified privately and are deliberately not
+reproduced here. These samples are historical execution observations, not a
+before/after measurement of the queue or a claim that routing changed them. See
+the [activity snapshot](#31-bounded-engineering-activity-snapshot) for the
+separate weekly counts series.
 
 ---
 
