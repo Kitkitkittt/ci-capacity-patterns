@@ -10,6 +10,8 @@ The optional activity-data collector reads GitHub with an authorized `gh`
 session; it is not needed to run the examples. No runner is registered or
 provider is deployed here.
 
+For a documentation-only review, start with the [Swarm-ready handoff](SWARM_READY.md#verification-starting-point).
+
 ```console
 $ python3 examples/selector_demo.py --help
 $ python3 tests/run_all.py
