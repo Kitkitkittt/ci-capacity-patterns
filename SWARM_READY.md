@@ -11,17 +11,17 @@ Give the working agent this prompt:
 
 ```text
 swarm ready: <one measurable repository objective>
-Read SWARM_READY.md and the applicable AGENTS.md. Continue the current owned
-work or ready issue, establish the baseline and acceptance check, then prepare
-a bounded worker handoff. Use existing authorized tools and capacity. Report
-what is documented, implemented, tested, and observed separately.
+Read SWARM_READY.md, README.md and docs/SOURCES.md. Continue the current
+owned work or ready issue, establish the baseline and acceptance check, then
+prepare a bounded worker handoff. Use existing authorized tools and capacity.
+Report what is documented, implemented, tested, and observed separately.
 ```
 
 If a `swarm-ready` skill is installed, load it. Otherwise execute the documented workflow directly. Treat the phrase as an agent instruction unless the installed CLI explicitly advertises it. Inspect help/version before using optional command adapters.
 
 ## Repository starting point
 
-Read: [README.md](README.md), [docs](docs), [tests](tests).
+Read the [repository overview](README.md) and [sourced findings](docs/SOURCES.md).
 
 Improve one existing offline queue/capacity simulation or explanation against its stated invariant.
 
@@ -41,11 +41,28 @@ The base above is an inspection snapshot, not a permanent working branch. Refres
 
 ## Verification starting point
 
-| Declared command | Source and limit |
-| --- | --- |
-| `python3 tests/run_all.py` | README.md |
+For documentation-only changes, run from the repository root with Git:
 
-These commands were read from source, not executed for this documentation change. Build, syntax and lint success are not functional acceptance. Confirm the current setup, lockfile, hooks, required services and focused test scope before running.
+```sh
+git --no-lazy-fetch ls-files --error-unmatch -- README.md SWARM_READY.md docs/SOURCES.md &&
+  git --no-lazy-fetch diff --no-ext-diff --no-textconv --check HEAD -- README.md SWARM_READY.md docs/SOURCES.md
+```
+
+The first command lists the three tracked paths; the second should exit zero
+without diagnostics for a whitespace-clean local patch, including staged and
+unstaged edits. For a committed patch, replace `HEAD` with the review base and
+candidate SHAs. Review the relative links and claims in the Markdown separately;
+the Git checks do not validate links or evidence.
+
+Keep the [evidence levels](README.md#1-status-what-is-implemented-what-is-simulated-what-is-only-proposed)
+separate: observed activity counts and historical controller timings do not
+measure a speedup. The hosted ARM64 pilot covered only a subset, the offline
+simulations produce model output, and the proposed routing is not deployed or
+qualified here. See the [verification limits](docs/SOURCES.md#3-what-we-verified-ourselves-and-what-we-did-not).
+
+`python3 tests/run_all.py` is the separate simulation correctness suite, not a
+docs check or provider qualification. The Git-only review does not run it,
+collect activity, contact providers, or start runners or VMs.
 
 ## Required handoff result
 
